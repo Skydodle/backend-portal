@@ -7,6 +7,22 @@ const generateToken = async (email, name) => {
   const token = crypto.randomBytes(20).toString('hex');
   const expirationDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 hours from now
 
+  // Check if an existing token for this email is pending
+  const existingToken = await RegistrationToken.findOne({ email });
+
+  if (existingToken) {
+    if (existingToken.status === 'Registered') {
+      throw new Error('This email has already been registered.');
+    } else if (existingToken.status === 'Pending') {
+      // Replace the existing token with a new one
+      existingToken.token = token;
+      existingToken.expirationDate = expirationDate;
+      await existingToken.save();
+      return existingToken.token; // Return the updated token
+    }
+  }
+
+  // If no existing pending token, create a new one
   const registrationToken = new RegistrationToken({
     token,
     email,
@@ -26,6 +42,9 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS, // Your email password or app-specific password
   },
 });
+
+// TODO: In the frontend, remember to extract the token from the URL
+// and attach it to the form submission as part of the POST request.
 
 // Send registration email
 const sendRegistrationEmail = async (name, email, token) => {

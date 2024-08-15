@@ -1,5 +1,6 @@
 const validator = require('validator');
 
+// Middleware to validate new user registration
 const validateNewUser = (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -27,7 +28,7 @@ const validateNewUser = (req, res, next) => {
   if (!validator.isEmail(email)) {
     return res
       .status(400)
-      .json({ message: 'Email must be in correct email form' });
+      .json({ message: 'Email must be in correct email format!' });
   }
 
   if (!validator.isLength(email, { min: 5, max: 50 })) {
@@ -59,33 +60,25 @@ const validateNewUser = (req, res, next) => {
   next();
 };
 
+// Middleware to validate user login (Username and Password only)
 const validateLoginUser = (req, res, next) => {
-  const { identifier, password } = req.body;
+  const { username, password } = req.body;
 
   if (
-    !identifier ||
+    !username ||
     !password ||
-    validator.isEmpty(identifier) ||
+    validator.isEmpty(username) ||
     validator.isEmpty(password)
   ) {
     return res.status(400).json({ message: 'Missing required fields!' });
   }
 
-  // Check if identifier is email or username
-  const isEmail = validator.isEmail(identifier);
-
-  if (!isEmail && !validator.isAlphanumeric(identifier)) {
-    return res
-      .status(400)
-      .json({
-        message: 'Identifier must be a valid email or alphanumeric username!',
-      });
+  if (!validator.isAlphanumeric(username)) {
+    return res.status(400).json({ message: 'Username must be alphanumeric!' });
   }
 
   // Sanitize inputs
-  req.body.identifier = isEmail
-    ? validator.normalizeEmail(identifier)
-    : validator.escape(identifier);
+  req.body.username = validator.escape(username);
   req.body.password = validator.escape(password);
 
   next();
