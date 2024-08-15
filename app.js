@@ -1,14 +1,12 @@
 /** @format */
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const authRouter = require('./routes/AuthRoutes');
-const productRouter = require('./routes/ProductRoutes');
-const favoriteRouter = require('./routes/FavoriteRoutes');
-const adminRouter = require('./routes/AdminRoutes');
+const hrRouter = require('./routes/hrRoutes');
 
 const app = express();
 
@@ -26,10 +24,7 @@ app.use(logger('dev'));
 
 app.use(express.static('views'));
 
-app.use('/api/auth', authRouter);
-app.use('/api/products', productRouter);
-app.use('/api/favorites', favoriteRouter);
-app.use('/api/admin', adminRouter);
+app.use('/api/hr', hrRouter);
 
 app.all('*', (_req, res) => {
   return res.status(404).json({ message: '404 Page Not Found' });
