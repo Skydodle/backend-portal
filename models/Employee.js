@@ -40,18 +40,13 @@ const employeeSchema = new Schema({
   dateOfBirth: { type: Date, required: true },
   gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
   citizenship: {
-    isCitizenOrPermanentResident: { type: Boolean, required: true },
-    status: {
-      type: String,
-      enum: ['Green Card', 'Citizen', 'H1-B', 'L2', 'F1(CPT/OPT)', 'H4', 'Other']
-    },
-    visaDetails: {
-      visaTitle: { type: String },
-      optReceipt: { type: String }, // for F1(CPT/OPT)
-      startDate: { type: Date },
-      endDate: { type: Date }
-    }
+    visaStatus: {type: String, required: true},
+    document: { type: String}, // use this name to find the file in S3 bucket
+    startDate: { type: Date },
+    endDate: { type: Date  },
+    optDocument: { type: mongoose.Schema.Types.ObjectId, ref:'VisaDocuments'}
   },
+  
   driverLicense: {
     hasDriverLicense: { type: Boolean, required: true },
     licenseNumber: { type: String },
