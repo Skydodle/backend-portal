@@ -1,9 +1,9 @@
 const argon2 = require('argon2');
-const Employee = require('../models/Employee');
+const User = require('../models/User');
 const RegistrationToken = require('../models/RegistrationToken');
 
-// Controller method to complete employee registration
-const postRegisterEmployee = async (req, res) => {
+// Controller method to complete user registration
+const postRegisterUser = async (req, res) => {
   const { token, username, password, email } = req.body;
 
   try {
@@ -33,8 +33,8 @@ const postRegisterEmployee = async (req, res) => {
     // Hash the password using argon2
     const hashedPassword = await argon2.hash(password);
 
-    // Create the new employee
-    const newEmployee = await Employee.create({
+    // Create the new User
+    const newUser = await User.create({
       username,
       password: hashedPassword,
       email: registrationToken.email, // Use the email associated with the token
@@ -46,10 +46,10 @@ const postRegisterEmployee = async (req, res) => {
 
     res.status(200).json({ message: 'Registration successful' });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to register employee', error });
+    res.status(500).json({ message: 'Failed to register User', error });
   }
 };
 
 module.exports = {
-  postRegisterEmployee,
+  postRegisterUser,
 };
