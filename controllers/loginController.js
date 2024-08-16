@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const argon2 = require('argon2');
-const Employee = require('../models/Employee');
+const User = require('../models/User');
 
 /**
  * Controller method to handle employee/HR login.
@@ -11,12 +11,12 @@ const Employee = require('../models/Employee');
  * 4. Return the token to the client for use in authentication.
  */
 
-const postLoginEmployee = async (req, res) => {
+const postLoginUser = async (req, res) => {
   const { username, password } = req.body;
 
   try {
     // Find the user by username
-    const user = await Employee.findOne({ username });
+    const user = await User.findOne({ username });
 
     // If user is not found, return an error
     if (!user) {
@@ -48,5 +48,5 @@ const postLoginEmployee = async (req, res) => {
 };
 
 module.exports = {
-  postLoginEmployee,
+  postLoginUser,
 };
