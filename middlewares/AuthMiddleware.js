@@ -6,8 +6,9 @@ const validator = require('validator');
  * This middleware will:
  * 1. Extract the token from the request (Header OR Cookie).
  * 2. Verify the token's validity.
- * 3. Assign decoded token data to the request.
- * 4. Pass control to the next middleware function.
+ * 3. Validate the user's role (must be 'employee' or 'HR').
+ * 4. Assign decoded token data to the request.
+ * 5. Pass control to the next middleware function.
  */
 
 const validateJWT = (req, res, next) => {
@@ -25,6 +26,13 @@ const validateJWT = (req, res, next) => {
     if (!decoded.id || !validator.isMongoId(decoded.id)) {
       return res.status(401).json({
         message: 'Invalid token',
+      });
+    }
+
+    // Validate the user's role
+    if (!['employee', 'HR'].includes(decoded.role)) {
+      return res.status(403).json({
+        message: 'Unauthorized role',
       });
     }
 
