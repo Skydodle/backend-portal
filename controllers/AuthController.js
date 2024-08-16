@@ -2,6 +2,35 @@ const argon2 = require('argon2');
 const User = require('../models/User');
 const RegistrationToken = require('../models/RegistrationToken');
 
+// Controller method to validate registration token before showing the registration form
+const validateRegistrationToken = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    // Verify the token
+    const registrationToken = await RegistrationToken.findOne({ token });
+
+    if (!registrationToken) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid or expired registration token' });
+    }
+
+    if (registrationToken.isExpired()) {
+      return res
+        .status(400)
+        .json({ message: 'Registration token has expired' });
+    }
+
+    // If valid, return success
+    res.status(200).json({ message: 'Valid registration token' });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Failed to validate registration token', error });
+  }
+};
+
 // Controller method to complete user registration
 const postRegisterUser = async (req, res) => {
   const { token, username, password, email } = req.body;
@@ -52,4 +81,5 @@ const postRegisterUser = async (req, res) => {
 
 module.exports = {
   postRegisterUser,
+  validateRegistrationToken,
 };
