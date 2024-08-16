@@ -1,83 +1,55 @@
-/** @format */
-
 const argon2 = require('argon2');
-const User = require('../models/User');
-const generateToken = require('../utils/generateToken');
+const Employee = require('../models/Employee');
+const RegistrationToken = require('../models/RegistrationToken');
 
-// Register New User
-const postRegisterUser = async (req, res) => {
-  const { username, email, password } = req.body;
+// Controller method to complete employee registration
+const postRegisterEmployee = async (req, res) => {
+  const { token, username, password, email } = req.body;
 
   try {
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+    // Verify the token
+    const registrationToken = await RegistrationToken.findOne({ token });
 
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Username already exists' });
-    }
-
-    const existEmail = await User.findOne({ email });
-    if (existEmail) {
-      return res.status(409).json({ message: 'Email already exists' });
-    }
-
-    const hashedPassword = await argon2.hash(password);
-
-    const user = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
-
-    const token = generateToken(user.id, username, 'user');
-
-    res.status(201).json({ user, token });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json(error);
-  }
-};
-
-// Login User
-const postLoginUser = async (req, res) => {
-  try {
-    const { identifier, password } = req.body;
-
-    if (!identifier || !password) {
+    if (!registrationToken) {
       return res
         .status(400)
-        .json({ message: 'Username & password are required' });
+        .json({ message: 'Invalid or expired registration token' });
     }
 
-    // check if indentifier input is username or email
-    const isEmail = identifier.includes('@');
-    const user = isEmail
-      ? await User.findOne({ email: identifier }).select('+password')
-      : await User.findOne({ username: identifier }).select('+password');
-
-    if (!user) {
-      return res.status(404).json({ message: 'Invalid username/email' });
+    if (registrationToken.isExpired()) {
+      return res
+        .status(400)
+        .json({ message: 'Registration token has expired' });
     }
 
-    const isPasswordCorrect = await argon2.verify(user.password, password);
-
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ message: 'Invalid password' });
+    // Check if the input email matches the email associated with the token
+    if (email !== registrationToken.email) {
+      return res.status(400).json({
+        message:
+          'Email does not match the one associated with the registration token',
+      });
     }
 
-    const token = generateToken(user.id, user.username, 'user');
-    console.log(token);
+    // Hash the password using argon2
+    const hashedPassword = await argon2.hash(password);
 
-    res.status(200).json({ user, token });
+    // Create the new employee
+    const newEmployee = await Employee.create({
+      username,
+      password: hashedPassword,
+      email: registrationToken.email, // Use the email associated with the token
+    });
+
+    // Update the token status to indicate it has been used
+    registrationToken.status = 'Registered';
+    await registrationToken.save();
+
+    res.status(200).json({ message: 'Registration successful' });
   } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to register employee', error });
   }
 };
 
 module.exports = {
-  postRegisterUser,
-  postLoginUser,
+  postRegisterEmployee,
 };

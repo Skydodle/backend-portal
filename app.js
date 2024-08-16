@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const hrRouter = require('./routes/hrRoutes');
+const authRouter = require('./routes/authRoutes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(logger('dev'));
 app.use(express.static('views'));
 
 app.use('/api/hr', hrRouter);
+app.use('/api/auth', authRouter);
 
 app.all('*', (_req, res) => {
   return res.status(404).json({ message: '404 Page Not Found' });
