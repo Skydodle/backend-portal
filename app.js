@@ -14,7 +14,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'http://localhost:5143', // React vite app
+    origin: 'http://localhost:5173', // React vite app
     credentials: true,
   }),
 );
