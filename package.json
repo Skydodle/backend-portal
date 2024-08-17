@@ -7,6 +7,8 @@
     "server-dev": "nodemon index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.633.0",
+    "@aws-sdk/s3-request-presigner": "^3.633.0",
     "argon2": "^0.40.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
