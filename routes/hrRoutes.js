@@ -8,7 +8,7 @@ const {
 
 const hrRouter = Router();
 
-hrRouter.post('/register', sendRegistrationEmailToEmployee);
+hrRouter.post('/send-email', sendRegistrationEmailToEmployee);
 hrRouter.get('/registration-history', getRegistrationHistory);
 
 module.exports = hrRouter;
