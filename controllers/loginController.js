@@ -41,7 +41,7 @@ const postLoginUser = async (req, res) => {
     );
 
     // Return the token to the client
-    res.status(200).json({ token });
+    res.status(200).json({ user, token });
   } catch (error) {
     res.status(500).json({ message: 'An error occurred during login', error });
   }
