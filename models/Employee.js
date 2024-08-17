@@ -1,45 +1,71 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+
+const refType=Schema.Types.ObjectId;
 const employeeSchema = new Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  role: { type: String, default: 'Employee' },
+
+  userId:{
+    type:refType,
+    ref:'User',
+  },
+  onboardingStatus: {
+    type: String,
+    enum: ['Not Started', 'Pending', 'Approved', 'Rejected'],
+    default: 'Not Started',
+  },
+
+  profilePicture: { type: String, default: '' },
 
   // Onboarding and Profile Information (optional for now)
-  firstName: String,
-  lastName: String,
-  middleName: String,
+  firstName: { type: String },
+  lastName: { type: String },
+  middleName: { type: String },
+  preferredName: { type: String },
+
   address: {
-    street: String,
-    city: String,
-    state: String,
-    zip: String,
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String }
   },
-  phoneNumber: String,
-  workPhoneNumber: String,
-  ssn: String,
-  dob: Date,
-  gender: String,
-  workAuthorization: {
-    type: String, // e.g., "H1-B", "OPT", etc.
-    startDate: Date,
-    endDate: Date,
-    documents: [String], // list of document URLs or references
+  cellPhoneNumber: { type: String },
+  workPhoneNumber: { type: String },
+  car: {
+    make: { type: String },
+    model: { type: String },
+    color: { type: String }
   },
+  ssn: { type: String },
+  dateOfBirth: { type: Date },
+  gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
+  citizenship: {
+    visaStatus: { type: String },
+    document: { type: String },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    // optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments' }
+  },
+  
   driverLicense: {
-    number: String,
-    expirationDate: Date,
-    document: String, // URL or reference to the document
+    hasDriverLicense: { type: Boolean },
+    licenseNumber: { type: String },
+    expirationDate: { type: Date },
+    licenseCopy: { type: String }
   },
-  emergencyContact: [
-    {
-      name: String,
-      phone: String,
-      relationship: String,
-    },
-  ],
+
+  emergencyContacts: [{
+    firstName: { type: String },
+    lastName: { type: String },
+    middleName: { type: String },
+    phone: { type: String },
+    email: { type: String },
+    relationship: { type: String }
+  }],
+  feedback: {
+    type: String,
+    default: '',
+  },
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);
