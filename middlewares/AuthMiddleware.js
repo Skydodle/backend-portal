@@ -30,7 +30,7 @@ const validateJWT = (req, res, next) => {
     }
 
     // Validate the user's role
-    if (!['employee', 'HR'].includes(decoded.role)) {
+    if (!['Employee', 'HR'].includes(decoded.role)) {
       return res.status(403).json({
         message: 'Unauthorized role',
       });
@@ -51,5 +51,18 @@ const validateJWT = (req, res, next) => {
     });
   }
 };
+const hrAuthMiddleware = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const user = await Employee.findById(userId);
 
-module.exports = validateJWT;
+    if (!user || user.role !== 'HR') {
+      return res.status(403).json({ message: 'Access denied. HR role required.' });
+    }
+
+    next(); // Continue to the next middleware or route handler
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
+  }
+};
+module.exports = {validateJWT,hrAuthMiddleware};

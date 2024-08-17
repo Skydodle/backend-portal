@@ -1,66 +1,66 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const employeeSchema = new Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  role: { type: String, default: 'Employee' },
 
+const refType=Schema.Types.ObjectId;
+const employeeSchema = new Schema({
+
+  userId:{
+    type:refType,
+    ref:'User',
+  },
   onboardingStatus: {
     type: String,
     enum: ['Not Started', 'Pending', 'Approved', 'Rejected'],
     default: 'Not Started',
   },
 
-  // profilePicture: { type: String, default: 'path/to/default/profile-picture.png' },
-  profilePicture: { type: String},
+  profilePicture: { type: String, default: '' },
 
   // Onboarding and Profile Information (optional for now)
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: { type: String },
+  lastName: { type: String },
   middleName: { type: String },
   preferredName: { type: String },
 
   address: {
-    street: String,
-    city: String,
-    state: String,
-    zip: String,
-    required:true
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String }
   },
-  cellPhoneNumber: { type: String, required: true},
+  cellPhoneNumber: { type: String },
   workPhoneNumber: { type: String },
   car: {
     make: { type: String },
     model: { type: String },
     color: { type: String }
   },
-  ssn: { type: String, required: true },
-  dateOfBirth: { type: Date, required: true },
+  ssn: { type: String },
+  dateOfBirth: { type: Date },
   gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
   citizenship: {
-    visaStatus: {type: String, required: true},
-    document: { type: String}, // use this name to find the file in S3 bucket
+    visaStatus: { type: String },
+    document: { type: String },
     startDate: { type: Date },
-    endDate: { type: Date  },
-    optDocument: { type: mongoose.Schema.Types.ObjectId, ref:'VisaDocuments'}
+    endDate: { type: Date },
+    // optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments' }
   },
   
   driverLicense: {
-    hasDriverLicense: { type: Boolean, required: true },
+    hasDriverLicense: { type: Boolean },
     licenseNumber: { type: String },
     expirationDate: { type: Date },
-    licenseCopy: { type: String } // path to uploaded copy
+    licenseCopy: { type: String }
   },
 
   emergencyContacts: [{
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
     middleName: { type: String },
-    phone: { type: String, required: true },
-    email: { type: String, required: true },
-    relationship: { type: String, required: true }
+    phone: { type: String },
+    email: { type: String },
+    relationship: { type: String }
   }],
   feedback: {
     type: String,
