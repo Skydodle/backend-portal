@@ -8,6 +8,8 @@ const employeeSchema = new Schema({
   userId:{
     type:refType,
     ref:'User',
+    required: true,
+
   },
   onboardingStatus: {
     type: String,
@@ -18,29 +20,29 @@ const employeeSchema = new Schema({
   profilePicture: { type: String, default: '' },
 
   // Onboarding and Profile Information (optional for now)
-  firstName: { type: String },
-  lastName: { type: String },
+  firstName: { type: String, required: true  },
+  lastName: { type: String, required: true  },
   middleName: { type: String },
   preferredName: { type: String },
 
   address: {
-    street: { type: String },
-    city: { type: String },
-    state: { type: String },
-    zip: { type: String }
+    street: { type: String, required: true  },
+    city: { type: String, required: true  },
+    state: { type: String, required: true  },
+    zip: { type: String, required: true  }
   },
-  cellPhoneNumber: { type: String },
+  cellPhoneNumber: { type: String, required: true  },
   workPhoneNumber: { type: String },
   car: {
     make: { type: String },
     model: { type: String },
     color: { type: String }
   },
-  ssn: { type: String },
-  dateOfBirth: { type: Date },
+  ssn: { type: String, required: true  },
+  dateOfBirth: { type: Date, required: true  },
   gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
   citizenship: {
-    visaStatus: { type: String },
+    visaStatus: { type: String, required: true  },
     document: { type: String },
     startDate: { type: Date },
     endDate: { type: Date },
@@ -55,12 +57,12 @@ const employeeSchema = new Schema({
   },
 
   emergencyContacts: [{
-    firstName: { type: String },
-    lastName: { type: String },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     middleName: { type: String },
-    phone: { type: String },
+    phone: { type: String, required: true },
     email: { type: String },
-    relationship: { type: String }
+    relationship: { type: String, required: true }
   }],
   feedback: {
     type: String,
