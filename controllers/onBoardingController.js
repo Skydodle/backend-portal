@@ -136,6 +136,7 @@ const rejectApplication = async (req, res) => {
   try {
     const { id } = req.params;
     const { feedback } = req.body;
+    console.log(feedback)
     const application = await Employee.findById(id);
 
     if (!application) {
