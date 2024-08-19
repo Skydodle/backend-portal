@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
-
+const User = require('../models/User');
 /**
  * Middleware to validate JWT.
  * This middleware will:
@@ -53,15 +53,24 @@ const validateJWT = (req, res, next) => {
 };
 const hrAuthMiddleware = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    const user = await Employee.findById(userId);
+    const userId = req.user.id; // Extract the user ID from the JWT payload
 
-    if (!user || user.role !== 'HR') {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.role !== 'HR') {
+      console.log('Access denied. User role:', user.role);
       return res.status(403).json({ message: 'Access denied. HR role required.' });
     }
 
+    console.log('HR access granted');
     next(); // Continue to the next middleware or route handler
   } catch (error) {
+    console.error('Error in hrAuthMiddleware:', error);
     return res.status(500).json({ message: 'Server error', error });
   }
 };
