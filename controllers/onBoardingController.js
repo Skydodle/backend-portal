@@ -3,16 +3,20 @@ const Employee = require('../models/Employee');
 // Get onboarding status
 const getOnboardingStatus = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await Employee.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    const userId = req.user.id; 
+    const employee = await Employee.findOne({ userId });
+    // If no profile is found, default to 'Not Started' status
+    if (!employee) {
+      return res.status(200).json({
+        onboardingStatus: 'Not Started',
+        feedback: '',
+      });
     }
 
+    // If the profile exists, return the actual onboardingStatus and feedback
     return res.status(200).json({
-      onboardingStatus: user.onboardingStatus,
-      feedback: user.feedback,
+      onboardingStatus: employee.onboardingStatus,
+      feedback: employee.feedback,
     });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error });
@@ -23,7 +27,7 @@ const getOnboardingStatus = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await Employee.findById(userId).select('-password'); // Exclude the password field
+    const user = await Employee.findOne({ userId }).select('-password');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -39,10 +43,14 @@ const getUserProfile = async (req, res) => {
 const postUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await Employee.findById(userId);
+    console.log("User ID from JWT:", userId); 
 
+    // Find the Employee document associated with the user
+    let user = await Employee.findOne({ userId });
+
+    // If Employee document doesn't exist, create a new one
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      user = new Employee({ userId });
     }
 
     const {
@@ -84,6 +92,7 @@ const postUserProfile = async (req, res) => {
       user.feedback = '';  // Clear feedback on resubmission
     }
 
+    // Save the new or updated profile
     await user.save();
 
     return res.status(200).json({ message: 'Onboarding information submitted successfully' });
@@ -91,81 +100,17 @@ const postUserProfile = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error });
   }
 };
-
-// Put (Update) user profile
-const putUserProfile = async (req, res) => {
+// Get all employees
+const getAllEmployees = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await Employee.findById(userId);
+    const employees = await Employee.find().sort({ firstName: 1 }); // Sort by first name
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const {
-      firstName,
-      lastName,
-      middleName,
-      preferredName,
-      address,
-      cellPhoneNumber,
-      workPhoneNumber,
-      car,
-      dateOfBirth,
-      gender,
-      citizenship,
-      driverLicense,
-      emergencyContacts,
-    } = req.body;
-
-    // Update user information
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.middleName = middleName || user.middleName;
-    user.preferredName = preferredName || user.preferredName;
-    user.address = address || user.address;
-    user.cellPhoneNumber = cellPhoneNumber || user.cellPhoneNumber;
-    user.workPhoneNumber = workPhoneNumber || user.workPhoneNumber;
-    user.car = car || user.car;
-    user.dateOfBirth = dateOfBirth || user.dateOfBirth;
-    user.gender = gender || user.gender;
-    user.citizenship = citizenship || user.citizenship;
-    user.driverLicense = driverLicense || user.driverLicense;
-    user.emergencyContacts = emergencyContacts || user.emergencyContacts;
-
-    await user.save();
-
-    return res.status(200).json({ message: 'Profile updated successfully', user });
+    return res.status(200).json(employees);
   } catch (error) {
-    return res.status(500).json({ message: 'Server error', error });
-  }
-};
-const getApplicationsByStatus = async (req, res) => {
-  try {
-    const { status } = req.params;
-    const applications = await Employee.find({ onboardingStatus: status });
-
-    return res.status(200).json(applications);
-  } catch (error) {
-    return res.status(500).json({ message: 'Server error', error });
+    return res.status(500).json({ message: 'Server error!', error });
   }
 };
 
-// View a specific onboarding application
-const viewApplication = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const application = await Employee.findById(id);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    return res.status(200).json(application);
-  } catch (error) {
-    return res.status(500).json({ message: 'Server error', error });
-  }
-};
 
 // Approve an onboarding application
 const approveApplication = async (req, res) => {
@@ -210,9 +155,7 @@ module.exports = {
   getOnboardingStatus,
   getUserProfile,
   postUserProfile,
-  putUserProfile,
-  getApplicationsByStatus,
-  viewApplication,
+  getAllEmployees,
   approveApplication,
   rejectApplication,
 };
