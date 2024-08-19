@@ -7,6 +7,15 @@ const validateRegistrationToken = async (req, res) => {
   const { token } = req.query;
 
   try {
+    // Set headers to prevent caching
+    res.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate',
+    );
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+
     // Verify the token
     const registrationToken = await RegistrationToken.findOne({ token });
 
