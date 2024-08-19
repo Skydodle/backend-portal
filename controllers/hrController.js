@@ -48,7 +48,7 @@ const transporter = nodemailer.createTransport({
 
 // Send registration email
 const sendRegistrationEmail = async (name, email, token) => {
-  const registrationLink = `http://yourdomain.com/register?token=${token}`;
+  const registrationLink = `http://localhost:5173/register?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
