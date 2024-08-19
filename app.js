@@ -9,6 +9,7 @@ const logger = require('morgan');
 const hrRouter = require('./routes/hrRoutes');
 const authRouter = require('./routes/authRoutes');
 const employeeRouter = require('./routes/EmployeeRoute');
+const visaRouter = require('./routes/visaRoutes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.static('views'));
 app.use('/api/hr', hrRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/employee', employeeRouter);
+app.use('/api/visa', visaRouter)
 
 app.all('*', (_req, res) => {
   return res.status(404).json({ message: '404 Page Not Found' });
