@@ -54,7 +54,7 @@ const validateNewUser = (req, res, next) => {
 
   // Sanitize inputs
   req.body.username = validator.escape(username);
-  req.body.email = validator.normalizeEmail(email);
+  req.body.email = validator.escape(email);
   req.body.password = validator.escape(password);
 
   next();
