@@ -68,6 +68,16 @@ const postRegisterUser = async (req, res) => {
       });
     }
 
+    // Check if a user with the same email or username already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      console.log('User with the same email or username already exists');
+      return res.status(400).json({
+        message:
+          'A user with the same email or username has already registered.',
+      });
+    }
+
     // Hash the password using argon2
     const hashedPassword = await argon2.hash(password);
 
