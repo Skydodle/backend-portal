@@ -46,7 +46,7 @@ const employeeSchema = new Schema({
     document: { type: String },
     startDate: { type: Date },
     endDate: { type: Date },
-    // optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments' }
+    optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments', default: null } // Use null as default for clarity
   },
   
   driverLicense: {
