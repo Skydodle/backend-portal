@@ -126,17 +126,17 @@ const seedEmployee = async () => {
         feedback: '',
       },
       optEAD: {
-        name: 'OPT_EAD_Alice.pdf',
+        name: '',
         status: 'pending',
         feedback: '',
       },
       i983: {
-        name: 'I983_Form_Alice.pdf',
+        name: '',
         status: 'pending',
         feedback: '',
       },
       i20: {
-        name: 'I20_Document_Alice.pdf',
+        name: '',
         status: 'pending',
         feedback: '',
       }
