@@ -43,10 +43,10 @@ const employeeSchema = new Schema({
   gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
   citizenship: {
     visaStatus: { type: String, required: true  },
-    document: { type: String },
-    startDate: { type: Date },
-    endDate: { type: Date },
-    // optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments' }
+    document: { type: String, default: '' },
+    startDate: { type: Date, default: null },
+    endDate: { type: Date, default: null },
+    optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments', default: null } // Use null as default for clarity
   },
   
   driverLicense: {
