@@ -8,10 +8,7 @@ const {
   approveApplication,
   rejectApplication,
 } = require('../controllers/onboardingController');
-const {
-  validateJWT,
-  hrAuthMiddleware,
-} = require('../middlewares/AuthMiddleware');
+const { validateHRJWT } = require('../middlewares/AuthMiddleware');
 
 employeeRouter.get('/status', validateJWT, getOnboardingStatus);
 employeeRouter.get('/profile', validateJWT, getUserProfile);
@@ -19,20 +16,18 @@ employeeRouter.post('/profile', validateJWT, postUserProfile);
 
 employeeRouter.get(
   '/employees',
-  validateJWT,
+  validateHRJWT,
   hrAuthMiddleware,
   getAllEmployees,
 );
 employeeRouter.put(
   '/applications/approve/:id',
-  validateJWT,
-  hrAuthMiddleware,
+  validateHRJWT,
   approveApplication,
 );
 employeeRouter.put(
   '/applications/reject/:id',
-  validateJWT,
-  hrAuthMiddleware,
+  validateHRJWT,
   rejectApplication,
 );
 
