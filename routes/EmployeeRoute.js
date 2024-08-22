@@ -10,16 +10,11 @@ const {
 } = require('../controllers/onboardingController');
 const { validateHRJWT } = require('../middlewares/AuthMiddleware');
 
-employeeRouter.get('/status', validateJWT, getOnboardingStatus);
-employeeRouter.get('/profile', validateJWT, getUserProfile);
-employeeRouter.post('/profile', validateJWT, postUserProfile);
+employeeRouter.get('/status', validateHRJWT, getOnboardingStatus);
+employeeRouter.get('/profile', validateHRJWT, getUserProfile);
+employeeRouter.post('/profile', validateHRJWT, postUserProfile);
 
-employeeRouter.get(
-  '/employees',
-  validateHRJWT,
-  hrAuthMiddleware,
-  getAllEmployees,
-);
+employeeRouter.get('/employees', validateHRJWT, getAllEmployees);
 employeeRouter.put(
   '/applications/approve/:id',
   validateHRJWT,
