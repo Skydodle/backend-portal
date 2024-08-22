@@ -3,11 +3,31 @@ const fs = require('fs');
 const { uploadFileToS3, getTemporaryUrlFromS3 } = require('../utils/s3Utils');
 const path = require('path');
 
+
+// for initial, push opt receipt
 const postEmployeeVisaDoc = async(req, res) => {
-    const { userid } = req.body;  // for testing without middleware
-    // const userid = req.user.id
+    // const { userid } = req.body;  // for testing without middleware
+    const userid = req.user.id
+    const username= req.user.username;
+    const documentType = 'optReceipt';
+    const file = req.file;
+    if (!file) {
+        return res.status(400).json({ error: 'File is required.' });
+    }
     try {
-        const newVisaDocument = new VisaDocuments({userid})
+        const fileExtension = path.extname(file.originalname);
+        const newFileName = `${username}-${documentType}${fileExtension}`;
+        await uploadFileToS3(file.path, newFileName, file.mimetype);
+        fs.unlinkSync(file.path);
+
+        const newVisaDocument = new VisaDocuments({
+            userid: userid,
+            optReceipt: {
+                name: newFileName,
+                status: 'pending', 
+                feedback: '' 
+            }
+        });
         await newVisaDocument.save()
         res.status(201).json(newVisaDocument)
     } catch(e) {
@@ -17,8 +37,8 @@ const postEmployeeVisaDoc = async(req, res) => {
 }
 
 const getEmployeeVisaDoc = async(req, res) => {
-    const { userid } = req.body;  // for testing without middleware
-    // const userid = req.user.id;
+    // const { userid } = req.body;  // for testing without middleware
+    const userid = req.user.id;
     try {
         const visaDocument = await VisaDocuments.findOne({ userid });
         if (!visaDocument) {
@@ -32,11 +52,11 @@ const getEmployeeVisaDoc = async(req, res) => {
 }
 
 const putEmployeeVisaDocName = async(req, res) => {
-    const { userid, username, documentType } = req.body;  // for testing without middleware
+    // const { userid, username, documentType } = req.body;  // for testing without middleware
     
-    // const userid = req.user.id;
-    // const username= req.user.username;
-    // const { documentType } = req.body; // e.g., 'optReceipt', 'optEAD', 'i983', 'i20'
+    const userid = req.user.id;
+    const username= req.user.username;
+    const { documentType } = req.body; // e.g., 'optReceipt', 'optEAD', 'i983', 'i20'
     const file = req.file; // Assuming file is uploaded via multer and available in req.file
 
     if (!documentType) {
@@ -46,11 +66,11 @@ const putEmployeeVisaDocName = async(req, res) => {
         return res.status(400).json({ error: 'File is required.' });
     }
     try {
-         // Extract the file extension
-         const fileExtension = path.extname(file.originalname);
+        // Extract the file extension
+        const fileExtension = path.extname(file.originalname);
 
-         // Generate the new file name with extension
-         const newFileName = `${username}-${documentType}${fileExtension}`;
+        // Generate the new file name with extension
+        const newFileName = `${username}-${documentType}${fileExtension}`;
 
         // Upload file to S3
         await uploadFileToS3(file.path, newFileName, file.mimetype);
@@ -81,10 +101,9 @@ const putEmployeeVisaDocName = async(req, res) => {
 }
 
 const getEmployeeUploadedDocumentUrls = async (req, res) => {
-    const { userid } = req.body;  // for testing without middleware
+    // const { userid } = req.body;  // for testing without middleware
     
-    // const userid = req.user.id;
-    
+    const userid = req.user.id;
     try {
         // Find the document by user ID
         const visaDocument = await VisaDocuments.findOne({ userid });
