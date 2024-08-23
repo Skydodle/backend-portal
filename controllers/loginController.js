@@ -47,6 +47,44 @@ const postLoginUser = async (req, res) => {
   }
 };
 
+/** Controller function for HR login, it will check if the login credential is role 'HR' in the database */
+const postLoginHR = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    // If user is not found or is not HR, return an error
+    if (!user || user.role !== 'HR') {
+      return res.status(401).json({ message: 'Unauthorized: HR only' });
+    }
+
+    // Verify the password using argon2
+    const isPasswordValid = await argon2.verify(user.password, password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '1h' },
+    );
+
+    // Return the token to the client
+    res.status(200).json({ user, token });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred during login', error });
+  }
+};
+
 module.exports = {
   postLoginUser,
+  postLoginHR,
 };

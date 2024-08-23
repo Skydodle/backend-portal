@@ -1,6 +1,6 @@
 const VisaDocuments = require('../models/VisaDocuments');
 const { getTemporaryUrlFromS3 } = require('../utils/s3Utils');
-
+const Employee = require('../models/Employee');
 
 
 const putEmployeeVisaApprove = async(req, res) => {
@@ -91,8 +91,24 @@ const getEmployeeVisaPreview = async(req, res) => {
     }
 }
 
+const getF1EmployeeVisaStatus = async(req, res) => {
+    try {
+        const f1Employee = await Employee.find({'citizenship.optDocument': { $ne: null }})
+                                        .populate('citizenship.optDocument')
+                                        .exec()
+        if (!f1Employee) {
+            return res.status(404).json({error: 'No F1 visa employee'})
+        }
+        res.status(200).json(f1Employee)
+    } catch (e) {
+        console.error('Error fetching employee', e)
+        throw e
+    }
+}
+
 module.exports = {
     putEmployeeVisaApprove,
     putEmployeeVisaReject,
-    getEmployeeVisaPreview
+    getEmployeeVisaPreview,
+    getF1EmployeeVisaStatus
 }

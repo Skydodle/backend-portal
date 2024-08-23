@@ -20,16 +20,26 @@ const postEmployeeVisaDoc = async(req, res) => {
         await uploadFileToS3(file.path, newFileName, file.mimetype);
         fs.unlinkSync(file.path);
 
-        const newVisaDocument = new VisaDocuments({
-            userid: userid,
-            optReceipt: {
-                name: newFileName,
-                status: 'pending', 
-                feedback: '' 
-            }
-        });
-        await newVisaDocument.save()
-        res.status(201).json(newVisaDocument)
+        let visaDocument = await VisaDocuments.findOne({ userid: userid });
+
+        if (visaDocument) {
+            visaDocument.optReceipt = {
+                name: newFileName, status: 'pending', feedback: ''};
+            await visaDocument.save();
+        } else {
+            visaDocument = new VisaDocuments({
+                userid: userid,
+                optReceipt: { name: newFileName, status: 'pending', feedback: '' }
+            });
+            await visaDocument.save();
+        }
+        await Employee.findOneAndUpdate(
+            { userId: userid },
+            { optDocument: visaDocument._id },
+            { new: true }
+        );
+
+        res.status(201).json(visaDocument);
     } catch(e) {
         console.error('Error creating visa document:', e);
         res.status(500).json({ error: 'An error occurred while creating the visa document' });
@@ -40,9 +50,19 @@ const getEmployeeVisaDoc = async(req, res) => {
     // const { userid } = req.body;  // for testing without middleware
     const userid = req.user.id;
     try {
-        const visaDocument = await VisaDocuments.findOne({ userid });
+        const employee = await Employee.findOne({ userId: userid });
+
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+
+        if (!employee.optDocument) {
+            return res.status(200).json({ message: 'No opt document uploaded yet' });
+        }
+        
+        const visaDocument = await VisaDocuments.findById(employee.optDocument);
         if (!visaDocument) {
-            return res.status(404).json({message: 'Employee visa document not found'})
+            return res.status(404).json({ message: 'Visa document not found' });
         }
         res.status(200).json(visaDocument)
     } catch(e) {
@@ -50,6 +70,7 @@ const getEmployeeVisaDoc = async(req, res) => {
         res.status(500).json({ error: 'An error occurred while retrieving the visa document' });
     }
 }
+
 
 const putEmployeeVisaDocName = async(req, res) => {
     // const { userid, username, documentType } = req.body;  // for testing without middleware

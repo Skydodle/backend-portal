@@ -98,6 +98,8 @@ const seedEmployee = async () => {
       gender: 'Female',
       citizenship: {
         visaStatus: 'F1',
+        startDate: new Date('2024-07-18'),
+        endDate: new Date('2025-10-31'),
       },
       driverLicense: {
         hasDriverLicense: true,
@@ -121,12 +123,12 @@ const seedEmployee = async () => {
     const newVisaDocuments2 = await VisaDocuments.create({
       userid: newUser2._id,
       optReceipt: {
-        name: 'OPT_Receipt_Alice.pdf',
-        status: 'pending',
+        name: 'michael-optReceipt.pdf',
+        status: 'approved',
         feedback: '',
       },
       optEAD: {
-        name: '',
+        name: 'aliceF1-optEAD.pdf',
         status: 'pending',
         feedback: '',
       },
