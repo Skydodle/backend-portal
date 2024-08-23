@@ -43,7 +43,6 @@ const getUserProfile = async (req, res) => {
 const postUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("User ID from JWT:", userId); 
 
     // Find the Employee document associated with the user
     let user = await Employee.findOne({ userId });
@@ -61,13 +60,14 @@ const postUserProfile = async (req, res) => {
       address,
       cellPhoneNumber,
       workPhoneNumber,
-      car,
+      carInformation,
       ssn,
       dateOfBirth,
       gender,
-      citizenship,
+      workAuthorization,
       driverLicense,
       emergencyContacts,
+      reference,
     } = req.body;
 
     // Update user information
@@ -78,18 +78,42 @@ const postUserProfile = async (req, res) => {
     user.address = address || user.address;
     user.cellPhoneNumber = cellPhoneNumber || user.cellPhoneNumber;
     user.workPhoneNumber = workPhoneNumber || user.workPhoneNumber;
-    user.car = car || user.car;
+    user.car = {
+      make: carInformation?.make || user.car.make,
+      model: carInformation?.model || user.car.model,
+      color: carInformation?.color || user.car.color,
+    };
     user.ssn = ssn || user.ssn;
     user.dateOfBirth = dateOfBirth || user.dateOfBirth;
     user.gender = gender || user.gender;
-    user.citizenship = citizenship || user.citizenship;
-    user.driverLicense = driverLicense || user.driverLicense;
+    user.citizenship = {
+      visaStatus: workAuthorization?.workAuthorization || user.citizenship.visaStatus,
+      visaType: workAuthorization?.visaType || user.citizenship.visaType,
+      document: workAuthorization?.receipt || user.citizenship.document,
+      startDate: workAuthorization?.startDate || user.citizenship.startDate,
+      endDate: workAuthorization?.endDate || user.citizenship.endDate,
+    };
+    user.driverLicense = {
+      hasDriverLicense: driverLicense?.hasDriverLicense || user.driverLicense.hasDriverLicense,
+      licenseNumber: driverLicense?.driverLicenseNumber || user.driverLicense.licenseNumber,
+      expirationDate: driverLicense?.expirationDate || user.driverLicense.expirationDate,
+      licenseCopy: driverLicense?.licenseCopy || user.driverLicense.licenseCopy,
+    };
+    user.reference = {
+      firstName: reference?.firstName || user.reference.firstName,
+      lastName: reference?.lastName || user.reference.lastName,
+      middleName: reference?.middleName || user.reference.middleName,
+      phone: reference?.phoneNumber || user.reference.phone,
+      email: reference?.emailAddress || user.reference.email,
+      relationship: reference?.relationship || user.reference.relationship,
+    };
     user.emergencyContacts = emergencyContacts || user.emergencyContacts;
 
     // Update onboarding status to Pending if it was Not Started or Rejected
+    console.log(user.onboardingStatus)
     if (user.onboardingStatus === 'Not Started' || user.onboardingStatus === 'Rejected') {
       user.onboardingStatus = 'Pending';
-      user.feedback = '';  // Clear feedback on resubmission
+      user.feedback = '';   
     }
 
     // Save the new or updated profile
@@ -100,6 +124,7 @@ const postUserProfile = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error });
   }
 };
+
 // Get all employees
 const getAllEmployees = async (req, res) => {
   try {

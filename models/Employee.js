@@ -26,6 +26,7 @@ const employeeSchema = new Schema({
   preferredName: { type: String },
 
   address: {
+    unit: {type: String},
     street: { type: String, required: true  },
     city: { type: String, required: true  },
     state: { type: String, required: true  },
@@ -42,7 +43,8 @@ const employeeSchema = new Schema({
   dateOfBirth: { type: Date, required: true  },
   gender: { type: String, enum: ['Male', 'Female', 'I do not wish to answer'] },
   citizenship: {
-    visaStatus: { type: String, required: true  },
+    visaStatus: { type: String, required: true},
+    visaType:{ type: String},
     document: { type: String, default: '' },
     startDate: { type: Date, default: null },
     endDate: { type: Date, default: null },
@@ -55,13 +57,20 @@ const employeeSchema = new Schema({
     expirationDate: { type: Date },
     licenseCopy: { type: String }
   },
-
+  reference:{
+    firstName: { type: String, required: true  },
+    lastName: { type: String, required: true  },
+    middleName: { type: String },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
+    relationship:{ type: String, required: true }
+  },
   emergencyContacts: [{
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     middleName: { type: String },
-    phone: { type: String, required: true },
-    email: { type: String },
+    phoneNumber: { type: String, required: true },
+    emailAddress: { type: String },
     relationship: { type: String, required: true }
   }],
   feedback: {
