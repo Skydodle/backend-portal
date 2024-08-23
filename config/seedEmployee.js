@@ -7,7 +7,7 @@ const VisaDocuments = require('../models/VisaDocuments');
 const seedEmployee = async () => {
   try {
     // Clear existing Employee data
-    await Employee.deleteMany({});
+    await Employee.deleteMany({}); 
     await User.deleteMany({ role: 'Employee' });
 
     // Create a User record for an Employee
@@ -68,7 +68,7 @@ const seedEmployee = async () => {
     const hashedPassword2 = await argon2.hash('abcd1234!');
     const newUser2 = await User.create({
       username: 'aliceF1',
-      email: 'skydodle@gmail.com',
+      email: 'alice@company.com',
       password: hashedPassword2,
       role: 'Employee',
     });
@@ -98,22 +98,38 @@ const seedEmployee = async () => {
       gender: 'Female',
       citizenship: {
         visaStatus: 'F1',
-        startDate: new Date('2024-07-18'),
-        endDate: new Date('2025-10-31'),
+        startDate: new Date('2022-12-31'),
+        endDate: new Date('2026-12-31'),
       },
       driverLicense: {
         hasDriverLicense: true,
         licenseNumber: 'S9876543',
         expirationDate: new Date('2028-12-31'),
       },
+      reference:{
+        firstName: 'Bob',
+        lastName: 'Dylan',
+        middleName: '',
+        phone: '555-234-1111',
+        email: 'bob.dylan@example.com',
+        relationship: 'Uncle',
+      },
       emergencyContacts: [
         {
           firstName: 'Robert',
           lastName: 'Smith',
           middleName: '',
-          phone: '555-234-1111',
-          email: 'robert.smith@example.com',
+          phoneNumber: '555-234-1111',
+          emailAddress: 'robert.smith@example.com',
           relationship: 'Father',
+        },
+        {
+          firstName: 'Tom',
+          lastName: 'Yi',
+          middleName: '',
+          phoneNumber: '123-456-7890',
+          emailAddress: 'tom.yi@example.com',
+          relationship: 'Grand Dad',
         },
       ],
       feedback: '',
@@ -123,12 +139,12 @@ const seedEmployee = async () => {
     const newVisaDocuments2 = await VisaDocuments.create({
       userid: newUser2._id,
       optReceipt: {
-        name: 'michael-optReceipt.pdf',
-        status: 'approved',
+        name: '',
+        status: 'pending',
         feedback: '',
       },
       optEAD: {
-        name: 'aliceF1-optEAD.pdf',
+        name: '',
         status: 'pending',
         feedback: '',
       },
@@ -141,13 +157,12 @@ const seedEmployee = async () => {
         name: '',
         status: 'pending',
         feedback: '',
-      },
+      }
     });
 
     // Link Visa Documents to Alice's Employee record
     newEmployee2.citizenship.optDocument = newVisaDocuments2._id;
     await newEmployee2.save();
-
     console.log('Employee seeded successfully');
   } catch (error) {
     console.error('Error seeding Employee', error);
