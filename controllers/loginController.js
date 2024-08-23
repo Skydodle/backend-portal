@@ -28,13 +28,13 @@ const postLoginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
-
     // Generate a JWT token
     const token = jwt.sign(
       {
         id: user._id,
         username: user.username,
         role: user.role, // 'employee' or 'HR'
+        email: user.email
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '1h' }, // Token expires in 1 hour
