@@ -68,7 +68,7 @@ const seedEmployee = async () => {
     const hashedPassword2 = await argon2.hash('abcd1234!');
     const newUser2 = await User.create({
       username: 'aliceF1',
-      email: 'alice@company.com',
+      email: 'skydodle@gmail.com',
       password: hashedPassword2,
       role: 'Employee',
     });
@@ -139,12 +139,12 @@ const seedEmployee = async () => {
     const newVisaDocuments2 = await VisaDocuments.create({
       userid: newUser2._id,
       optReceipt: {
-        name: '',
-        status: 'pending',
+        name: 'michael-optReceipt.pdf',
+        status: 'approved',
         feedback: '',
       },
       optEAD: {
-        name: '',
+        name: 'aliceF1-optEAD.pdf',
         status: 'pending',
         feedback: '',
       },
