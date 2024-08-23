@@ -71,6 +71,7 @@ const getEmployeeVisaDoc = async(req, res) => {
     }
 }
 
+
 const putEmployeeVisaDocName = async(req, res) => {
     // const { userid, username, documentType } = req.body;  // for testing without middleware
     

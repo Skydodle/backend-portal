@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:4200'], // React vite app
+    origin: ['http://localhost:5173', 'http://localhost:4200'], // React vite app(5173), Angular app(4200)
     credentials: true,
   }),
 );
@@ -30,7 +30,7 @@ app.use(express.static('views'));
 app.use('/api/hr', hrRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/employee', employeeRouter);
-app.use('/api/visa', visaRouter)
+app.use('/api/visa', visaRouter);
 
 app.all('*', (_req, res) => {
   return res.status(404).json({ message: '404 Page Not Found' });
