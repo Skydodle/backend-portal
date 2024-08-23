@@ -7,7 +7,7 @@ const VisaDocuments = require('../models/VisaDocuments');
 const seedEmployee = async () => {
   try {
     // Clear existing Employee data
-    await Employee.deleteMany({}); 
+    await Employee.deleteMany({});
     await User.deleteMany({ role: 'Employee' });
 
     // Create a User record for an Employee
@@ -68,7 +68,7 @@ const seedEmployee = async () => {
     const hashedPassword2 = await argon2.hash('abcd1234!');
     const newUser2 = await User.create({
       username: 'aliceF1',
-      email: 'alice@company.com',
+      email: 'skydodle@gmail.com',
       password: hashedPassword2,
       role: 'Employee',
     });
@@ -141,7 +141,7 @@ const seedEmployee = async () => {
         name: '',
         status: 'pending',
         feedback: '',
-      }
+      },
     });
 
     // Link Visa Documents to Alice's Employee record
