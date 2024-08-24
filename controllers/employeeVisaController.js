@@ -79,11 +79,11 @@ const getEmployeeVisaDoc = async(req, res) => {
             return res.status(404).json({ message: 'Employee not found' });
         }
 
-        if (!employee.optDocument) {
+        if (!employee.citizenship.optDocument) {
             return res.status(200).json({ message: 'No opt document uploaded yet' });
         }
         
-        const visaDocument = await VisaDocuments.findById(employee.optDocument);
+        const visaDocument = await VisaDocuments.findById(employee.citizenship.optDocument);
         if (!visaDocument) {
             return res.status(404).json({ message: 'Visa document not found' });
         }
