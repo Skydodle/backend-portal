@@ -10,7 +10,7 @@ const postEmployeeVisaDoc = async(req, res) => {
     // const { userid } = req.body;  // for testing without middleware
     const userid = req.user.id
     const username= req.user.username;
-    const documentType = 'optReceipt';
+    const { documentType } = req.body;
     const file = req.file;
     if (!file) {
         return res.status(400).json({ error: 'File is required.' });
@@ -20,31 +20,53 @@ const postEmployeeVisaDoc = async(req, res) => {
         const newFileName = `${username}-${documentType}${fileExtension}`;
         await uploadFileToS3(file.path, newFileName, file.mimetype);
         fs.unlinkSync(file.path);
-
-        let visaDocument = await VisaDocuments.findOne({ userid: userid });
-
-        if (visaDocument) {
+    
+        if (documentType === 'optReceipt') {
+          // Handle OPT Receipt
+          let visaDocument = await VisaDocuments.findOne({ userid: userid });
+    
+          if (visaDocument) {
             visaDocument.optReceipt = {
-                name: newFileName, status: 'pending', feedback: ''};
+              name: newFileName,
+              status: 'pending',
+              feedback: ''
+            };
             await visaDocument.save();
-        } else {
+          } else {
             visaDocument = new VisaDocuments({
-                userid: userid,
-                optReceipt: { name: newFileName, status: 'pending', feedback: '' }
+              userid: userid,
+              optReceipt: {
+                name: newFileName,
+                status: 'pending',
+                feedback: ''
+              }
             });
             await visaDocument.save();
-        }
-        await Employee.findOneAndUpdate(
+          }
+    
+          await Employee.findOneAndUpdate(
             { userId: userid },
             { 'citizenship.optDocument': visaDocument._id },
             { new: true }
-        );
-
-        res.status(201).json(visaDocument);
-    } catch(e) {
+          );
+        } else if (documentType === 'driverLicense') {
+          // Handle Driver's License
+          await Employee.findOneAndUpdate(
+            { userId: userid },
+            {
+              'driverLicense.licenseCopy': newFileName,
+            },
+            { new: true }
+          );
+        } else {
+          return res.status(400).json({ error: 'Invalid document type.' });
+        }
+    
+        res.status(201).json({ documentId: newFileName });
+      } catch (e) {
         console.error('Error creating visa document:', e);
-        res.status(500).json({ error: 'An error occurred while creating the visa document' });
-    }
+        res.status(500).json({ error: 'An error occurred while creating the document' });
+      }
 }
 
 const getEmployeeVisaDoc = async(req, res) => {
