@@ -2,6 +2,7 @@ const VisaDocuments = require('../models/VisaDocuments')
 const fs = require('fs');
 const { uploadFileToS3, getTemporaryUrlFromS3 } = require('../utils/s3Utils');
 const path = require('path');
+const Employee = require('../models/Employee');
 
 
 // for initial, push opt receipt
@@ -35,7 +36,7 @@ const postEmployeeVisaDoc = async(req, res) => {
         }
         await Employee.findOneAndUpdate(
             { userId: userid },
-            { optDocument: visaDocument._id },
+            { 'citizenship.optDocument': visaDocument._id },
             { new: true }
         );
 

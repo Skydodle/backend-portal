@@ -48,7 +48,9 @@ const employeeSchema = new Schema({
     document: { type: String, default: '' },
     startDate: { type: Date, default: null },
     endDate: { type: Date, default: null },
-    optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments', default: null } // Use null as default for clarity
+    // optDocument: { type: mongoose.Schema.Types.ObjectId, ref: 'VisaDocuments', default: null } // Use null as default for clarity
+    optDocument: { type: refType, ref: 'VisaDocuments', default: null } // Use null as default for clarity
+
   },
   
   driverLicense: {
