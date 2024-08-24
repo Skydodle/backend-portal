@@ -64,12 +64,12 @@ const postUserProfile = async (req, res) => {
       ssn,
       dateOfBirth,
       gender,
-      workAuthorization,
+      citizenship,
       driverLicense,
       emergencyContacts,
       reference,
     } = req.body;
-
+    console.log(req.body)
     // Update user information
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
@@ -87,11 +87,11 @@ const postUserProfile = async (req, res) => {
     user.dateOfBirth = dateOfBirth || user.dateOfBirth;
     user.gender = gender || user.gender;
     user.citizenship = {
-      visaStatus: workAuthorization?.workAuthorization || user.citizenship.visaStatus,
-      visaType: workAuthorization?.visaType || user.citizenship.visaType,
-      document: workAuthorization?.receipt || user.citizenship.document,
-      startDate: workAuthorization?.startDate || user.citizenship.startDate,
-      endDate: workAuthorization?.endDate || user.citizenship.endDate,
+      visaStatus:  citizenship.visaStatus || user.citizenship.visaStatus,
+      visaType: citizenship.visaType || user.citizenship.visaType,
+      document: citizenship.receipt || user.citizenship.document,
+      startDate: citizenship.startDate || user.citizenship.startDate,
+      endDate: citizenship.endDate || user.citizenship.endDate,
     };
     user.driverLicense = {
       hasDriverLicense: driverLicense?.hasDriverLicense || user.driverLicense.hasDriverLicense,
@@ -109,8 +109,7 @@ const postUserProfile = async (req, res) => {
     };
     user.emergencyContacts = emergencyContacts || user.emergencyContacts;
 
-    // Update onboarding status to Pending if it was Not Started or Rejected
-    console.log(user.onboardingStatus)
+
     if (user.onboardingStatus === 'Not Started' || user.onboardingStatus === 'Rejected') {
       user.onboardingStatus = 'Pending';
       user.feedback = '';   
@@ -121,6 +120,7 @@ const postUserProfile = async (req, res) => {
 
     return res.status(200).json({ message: 'Onboarding information submitted successfully' });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: 'Server error', error });
   }
 };
