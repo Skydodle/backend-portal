@@ -3,7 +3,7 @@ const Employee = require('../models/Employee');
 // Get onboarding status
 const getOnboardingStatus = async (req, res) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const employee = await Employee.findOne({ userId });
     // If no profile is found, default to 'Not Started' status
     if (!employee) {
@@ -69,7 +69,7 @@ const postUserProfile = async (req, res) => {
       emergencyContacts,
       reference,
     } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     // Update user information
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
@@ -87,16 +87,19 @@ const postUserProfile = async (req, res) => {
     user.dateOfBirth = dateOfBirth || user.dateOfBirth;
     user.gender = gender || user.gender;
     user.citizenship = {
-      visaStatus:  citizenship.visaStatus || user.citizenship.visaStatus,
+      visaStatus: citizenship.visaStatus || user.citizenship.visaStatus,
       visaType: citizenship.visaType || user.citizenship.visaType,
-      document: citizenship.receipt || user.citizenship.document,
+      document: citizenship.document || user.citizenship.document,
       startDate: citizenship.startDate || user.citizenship.startDate,
       endDate: citizenship.endDate || user.citizenship.endDate,
     };
     user.driverLicense = {
-      hasDriverLicense: driverLicense?.hasDriverLicense || user.driverLicense.hasDriverLicense,
-      licenseNumber: driverLicense?.driverLicenseNumber || user.driverLicense.licenseNumber,
-      expirationDate: driverLicense?.expirationDate || user.driverLicense.expirationDate,
+      hasDriverLicense:
+        driverLicense?.hasDriverLicense || user.driverLicense.hasDriverLicense,
+      licenseNumber:
+        driverLicense?.driverLicenseNumber || user.driverLicense.licenseNumber,
+      expirationDate:
+        driverLicense?.expirationDate || user.driverLicense.expirationDate,
       licenseCopy: driverLicense?.licenseCopy || user.driverLicense.licenseCopy,
     };
     user.reference = {
@@ -109,18 +112,22 @@ const postUserProfile = async (req, res) => {
     };
     user.emergencyContacts = emergencyContacts || user.emergencyContacts;
 
-
-    if (user.onboardingStatus === 'Not Started' || user.onboardingStatus === 'Rejected') {
+    if (
+      user.onboardingStatus === 'Not Started' ||
+      user.onboardingStatus === 'Rejected'
+    ) {
       user.onboardingStatus = 'Pending';
-      user.feedback = '';   
+      user.feedback = '';
     }
 
     // Save the new or updated profile
     await user.save();
 
-    return res.status(200).json({ message: 'Onboarding information submitted successfully' });
+    return res
+      .status(200)
+      .json({ message: 'Onboarding information submitted successfully' });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: 'Server error', error });
   }
 };
@@ -136,7 +143,6 @@ const getAllEmployees = async (req, res) => {
   }
 };
 
-
 // Approve an onboarding application
 const approveApplication = async (req, res) => {
   try {
@@ -150,7 +156,9 @@ const approveApplication = async (req, res) => {
     application.onboardingStatus = 'Approved';
     await application.save();
 
-    return res.status(200).json({ message: 'Application approved successfully' });
+    return res
+      .status(200)
+      .json({ message: 'Application approved successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error });
   }
@@ -161,7 +169,7 @@ const rejectApplication = async (req, res) => {
   try {
     const { id } = req.params;
     const { feedback } = req.body;
-    console.log(feedback)
+    console.log(feedback);
     const application = await Employee.findById(id);
 
     if (!application) {
@@ -172,7 +180,9 @@ const rejectApplication = async (req, res) => {
     application.feedback = feedback;
     await application.save();
 
-    return res.status(200).json({ message: 'Application rejected with feedback' });
+    return res
+      .status(200)
+      .json({ message: 'Application rejected with feedback' });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error });
   }
