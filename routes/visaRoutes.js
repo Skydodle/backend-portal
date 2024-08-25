@@ -3,7 +3,7 @@ const { getEmployeeVisaDoc, putEmployeeVisaDocName, postEmployeeVisaDoc, getEmpl
 const multer = require('multer');
 const path = require('path');
 const { getEmployeeVisaPreview, putEmployeeVisaApprove, putEmployeeVisaReject, getF1EmployeeVisaStatus } = require('../controllers/hrVisaController');
-const { validateJWT } = require('../middlewares/authMiddleware');
+const { validateJWT } = require('../middlewares/AuthMiddleware');
 const upload = multer({dest: 'upload/'})
 
 
