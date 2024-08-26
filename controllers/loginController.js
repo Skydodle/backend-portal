@@ -34,7 +34,7 @@ const postLoginUser = async (req, res) => {
         id: user._id,
         username: user.username,
         role: user.role, // 'employee' or 'HR'
-        email: user.email
+        email: user.email,
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '1h' }, // Token expires in 1 hour
@@ -84,7 +84,25 @@ const postLoginHR = async (req, res) => {
   }
 };
 
+// Controller method to get details of a specific user
+const getUserDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id).populate('assignedHouse phoneNumber');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get user details', error });
+  }
+};
+
 module.exports = {
   postLoginUser,
   postLoginHR,
+  getUserDetails,
 };
