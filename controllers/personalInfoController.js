@@ -2,7 +2,7 @@ const Employee = require("../models/Employee");
 const User = require("../models/User");
 const VisaDocuments = require("../models/VisaDocuments");
 const fs = require('fs');
-const { uploadFileToS3 } = require("../utils/s3Utils");
+const { uploadFileToS3, getTemporaryUrlFromS3 } = require("../utils/s3Utils");
 const path = require("path");
 
 
@@ -175,6 +175,22 @@ const updateVisaDocument = async(req, res) => {
     }
 }
 
+const getFileUrl = async(req, res) => {
+    const userId = req.user.id;
+    const { documentName } = req.body;
+
+    if (!documentName) {
+        return res.status(400).json({ error: 'Document name is required.' });
+    }
+    try {
+        const { url, mimeType } = await getTemporaryUrlFromS3(documentName);
+        res.status(200).json({ url, mimeType });
+    } catch (e) {
+        console.error('Error getting file URL:', e.message);
+        res.status(500).json({ error: 'An error occurred while getting the file URL.' });
+    }
+}
+
 module.exports = {
     getEmployeeInfoById,
     putEmployeeInfoById,
@@ -182,4 +198,5 @@ module.exports = {
     updateProfilePicture,
     updateLicenseCopy,
     updateVisaDocument,
+    getFileUrl,
 }
