@@ -3,6 +3,7 @@ const employeeRouter = express.Router();
 const {
   getOnboardingStatus,
   getUserProfile,
+  getUserProfileByID,
   postUserProfile,
   getAllEmployees,
   approveApplication,
@@ -18,6 +19,7 @@ const {
 } = require('../controllers/employeeProfileController');
 employeeRouter.get('/status', validateJWT, getOnboardingStatus);
 employeeRouter.get('/profile', validateJWT, getUserProfile);
+employeeRouter.get('/profileID/:userId', validateJWT, getUserProfileByID)
 employeeRouter.post('/profile', validateJWT, postUserProfile);
 
 employeeRouter.get('/employees', validateHRJWT, getAllEmployees);
