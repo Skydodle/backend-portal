@@ -23,7 +23,7 @@ const seedEmployee = async () => {
       // Create an Employee record linked to the created User (John Doe)
       await Employee.create({
         userId: newUser._id,
-        onboardingStatus: 'Not Started',
+        onboardingStatus: 'Pending',
         firstName: 'John',
         lastName: 'Doe',
         middleName: 'M.',
@@ -84,7 +84,7 @@ const seedEmployee = async () => {
   
       const newEmployee2 = await Employee.create({
         userId: newUser2._id,
-        onboardingStatus: 'Not Started',
+        onboardingStatus: 'Pending',
         firstName: 'Alice',
         lastName: 'Smith',
         middleName: 'L.',
