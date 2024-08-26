@@ -17,17 +17,17 @@ const { validateHRJWT } = require('../middlewares/AuthMiddleware');
 
 const hrHouseRouter = Router();
 
-hrHouseRouter.post('/house', validateHRJWT, createHouse);
-hrHouseRouter.delete('/house/:id', validateHRJWT, deleteHouse);
-hrHouseRouter.get('/houses', validateHRJWT, getAllHouses);
-hrHouseRouter.get('/house/:id', validateHRJWT, getHouseDetails);
+hrHouseRouter.post('/create', validateHRJWT, createHouse);
+hrHouseRouter.delete('/:id', validateHRJWT, deleteHouse);
+hrHouseRouter.get('/getAll', validateHRJWT, getAllHouses);
+hrHouseRouter.get('/:id', validateHRJWT, getHouseDetails);
 hrHouseRouter.put(
   '/report/:id/status',
   validateHRJWT,
   updateFacilityReportStatus,
 );
 hrHouseRouter.get(
-  '/house/:houseId/reports',
+  '/:houseId/reports',
   validateHRJWT,
   getFacilityReportsForHouse,
 );

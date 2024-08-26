@@ -13,13 +13,9 @@ const { validateJWT } = require('../middlewares/AuthMiddleware');
 
 const emHouseRouter = Router();
 
-emHouseRouter.get('/house/:id', validateJWT, getHouseDetails);
-emHouseRouter.post('/house/:houseId/report', validateJWT, createFacilityReport);
-emHouseRouter.get(
-  '/house/:houseId/reports',
-  validateJWT,
-  getFacilityReportsForHouse,
-);
+emHouseRouter.get('/:id', validateJWT, getHouseDetails);
+emHouseRouter.post('/:houseId/report', validateJWT, createFacilityReport);
+emHouseRouter.get('/:houseId/reports', validateJWT, getFacilityReportsForHouse);
 emHouseRouter.post(
   '/report/:reportId/comment',
   validateJWT,
