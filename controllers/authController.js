@@ -1,6 +1,7 @@
 const argon2 = require('argon2');
 const User = require('../models/User');
 const RegistrationToken = require('../models/RegistrationToken');
+const House = require('../models/House');
 
 // Controller method to validate registration token before showing the registration form
 const validateRegistrationToken = async (req, res) => {
@@ -81,11 +82,26 @@ const postRegisterUser = async (req, res) => {
     // Hash the password using argon2
     const hashedPassword = await argon2.hash(password);
 
+    // Randomly assign a house
+    const houses = await House.find(); // Get all available houses
+    if (houses.length === 0) {
+      return res
+        .status(400)
+        .json({ message: 'No houses available for assignment' });
+    }
+    const randomHouse = houses[Math.floor(Math.random() * houses.length)];
+
     // Create the new User
     const newUser = await User.create({
       username,
       password: hashedPassword,
       email: registrationToken.email, // Use the email associated with the token
+      assignedHouse: randomHouse._id, // Assign a random house
+    });
+
+    // Update the House document to include the new user in the residents array
+    await House.findByIdAndUpdate(randomHouse._id, {
+      $push: { residents: newUser._id },
     });
 
     // Update the token status to indicate it has been used

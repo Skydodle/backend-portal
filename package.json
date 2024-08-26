@@ -4,7 +4,8 @@
   "private": false,
   "main": "index.js",
   "scripts": {
-    "server-dev": "nodemon index.js"
+    "server-dev": "nodemon index.js",
+    "seed": "node ./config/seedHR.js && node ./config/seedHouse.js "
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.633.0",

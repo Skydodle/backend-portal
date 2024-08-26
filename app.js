@@ -10,6 +10,8 @@ const hrRouter = require('./routes/hrRoutes');
 const authRouter = require('./routes/authRoutes');
 const employeeRouter = require('./routes/EmployeeRoute');
 const visaRouter = require('./routes/visaRoutes');
+const emHouseRouter = require('./routes/emHouseRoutes');
+const hrHouseRouter = require('./routes/hrHouseRoutes');
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use('/api/hr', hrRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/visa', visaRouter);
+app.use('/api/employee/house', emHouseRouter);
+app.use('/api/hr/house', hrHouseRouter);
 
 app.all('*', (_req, res) => {
   return res.status(404).json({ message: '404 Page Not Found' });
