@@ -17,7 +17,7 @@ const {
   updatePersonalDetails,
   updateProfileImage,
 } = require('../controllers/employeeProfileController');
-const { getEmployeeInfoById, putEmployeeEmailById, putEmployeeInfoById, updateLicenseCopy, updateProfilePicture, updateVisaDocument } = require('../controllers/personalInfoController');
+const { getEmployeeInfoById, putEmployeeEmailById, putEmployeeInfoById, updateLicenseCopy, updateProfilePicture, updateVisaDocument, getFileUrl } = require('../controllers/personalInfoController');
 const multer = require('multer');
 const upload = multer({dest: 'upload/'})
 
@@ -49,5 +49,6 @@ employeeRouter.put('/info/email', validateJWT, putEmployeeEmailById)
 employeeRouter.put('/info/profile', validateJWT, upload.single('file'), updateProfilePicture)
 employeeRouter.put('/info/visa', validateJWT, upload.single('file'), updateVisaDocument)
 employeeRouter.put('/info/license', validateJWT, upload.single('file'), updateLicenseCopy)
+employeeRouter.put('/info/url', validateJWT, getFileUrl)
 
 module.exports = employeeRouter;
