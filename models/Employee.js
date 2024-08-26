@@ -17,7 +17,7 @@ const employeeSchema = new Schema({
     default: 'Not Started',
   },
 
-  profilePicture: { type: String, default: '' },
+  profilePicture: { type: String, default: 'DefaultProfilePicture.jpg' },
 
   // Onboarding and Profile Information (optional for now)
   firstName: { type: String, required: true  },

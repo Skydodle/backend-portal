@@ -27,7 +27,8 @@ const getOnboardingStatus = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await Employee.findOne({ userId }).populate('userId').select('-password');
+    // const user = await Employee.findOne({ userId }).populate('userId').select('-password');
+    const user = await Employee.findOne({ userId }).select('-password');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -138,7 +139,7 @@ const postUserProfile = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: 'Onboarding information submitted successfully' });
+      .json({ message: 'Onboarding information submitted successfully',user:user });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: 'Server error', error });
@@ -147,9 +148,10 @@ const postUserProfile = async (req, res) => {
 
 // Get all employees
 const getAllEmployees = async (req, res) => {
+  console.log("hello")
+  // console.log(employees)
   try {
     const employees = await Employee.find().populate('userId').sort({ firstName: 1 }); // Sort by first name
-
     return res.status(200).json(employees);
   } catch (error) {
     return res.status(500).json({ message: 'Server error!', error });
