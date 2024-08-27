@@ -74,7 +74,7 @@ const postUserProfile = async (req, res) => {
       address,
       cellPhoneNumber,
       workPhoneNumber,
-      carInformation,
+      car,
       ssn,
       dateOfBirth,
       gender,
@@ -93,9 +93,9 @@ const postUserProfile = async (req, res) => {
     user.cellPhoneNumber = cellPhoneNumber || user.cellPhoneNumber;
     user.workPhoneNumber = workPhoneNumber || user.workPhoneNumber;
     user.car = {
-      make: carInformation?.make || user.car.make,
-      model: carInformation?.model || user.car.model,
-      color: carInformation?.color || user.car.color,
+      make: car?.make || user.car.make,
+      model: car?.model || user.car.model,
+      color: car?.color || user.car.color,
     };
     user.ssn = ssn || user.ssn;
     user.dateOfBirth = dateOfBirth || user.dateOfBirth;
@@ -111,7 +111,7 @@ const postUserProfile = async (req, res) => {
       hasDriverLicense:
         driverLicense?.hasDriverLicense || user.driverLicense.hasDriverLicense,
       licenseNumber:
-        driverLicense?.driverLicenseNumber || user.driverLicense.licenseNumber,
+        driverLicense?.licenseNumber || user.driverLicense.licenseNumber,
       expirationDate:
         driverLicense?.expirationDate || user.driverLicense.expirationDate,
       licenseCopy: driverLicense?.licenseCopy || user.driverLicense.licenseCopy,
