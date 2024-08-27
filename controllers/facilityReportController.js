@@ -1,5 +1,6 @@
 const FacilityReport = require('../models/FacilityReport');
 const House = require('../models/House');
+const Employee = require('../models/Employee');
 
 // Controller method to create a new facility report (Employee only)
 const createFacilityReport = async (req, res) => {
@@ -33,17 +34,30 @@ const getFacilityReportsForHouse = async (req, res) => {
   const { houseId } = req.params;
 
   try {
-    const house = await House.findById(houseId).populate({
-      path: 'facilityReports',
-      populate: { path: 'createdBy comments' },
-    });
+    const house = await House.findById(houseId).populate('facilityReports');
 
     if (!house) {
       return res.status(404).json({ message: 'House not found' });
     }
 
-    res.status(200).json(house.facilityReports);
+    const facilityReports = await Promise.all(
+      house.facilityReports.map(async (report) => {
+        // Find the Employee associated with the User (createdBy field)
+        const employee = await Employee.findOne({ userId: report.createdBy });
+
+        return {
+          ...report.toObject(),
+          createdBy: {
+            firstName: employee?.firstName || 'Unknown',
+            lastName: employee?.lastName || '',
+          },
+        };
+      }),
+    );
+
+    res.status(200).json(facilityReports);
   } catch (error) {
+    console.error('Error fetching facility reports:', error);
     res.status(500).json({ message: 'Failed to get facility reports', error });
   }
 };

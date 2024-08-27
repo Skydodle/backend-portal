@@ -23,9 +23,17 @@ const getHouseDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const house = await House.findById(id).populate(
-      'residents facilityReports',
-    );
+    const house = await House.findById(id)
+      .populate({
+        path: 'residents',
+        select: 'username assignedHouse',
+        populate: {
+          path: 'userId',
+          model: 'Employee',
+          select: 'firstName lastName cellPhoneNumber',
+        },
+      })
+      .populate('facilityReports');
 
     if (!house) {
       return res.status(404).json({ message: 'House not found' });
