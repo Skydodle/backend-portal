@@ -1,5 +1,6 @@
 const House = require('../models/House');
 const User = require('../models/User');
+const Employee = require('../models/Employee');
 
 // Controller method to create a new house (HR only)
 const createHouse = async (req, res) => {
@@ -23,6 +24,7 @@ const getHouseDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
+
     const house = await House.findById(id)
       .populate({
         path: 'residents',
@@ -38,8 +40,32 @@ const getHouseDetails = async (req, res) => {
     if (!house) {
       return res.status(404).json({ message: 'House not found' });
     }
+    const houseCopy = { ...house.toObject() };
 
-    res.status(200).json(house);
+    if (house.residents.length !== 0) {
+        const detailedResidents = [];
+      for (let residentId of house.residents) {
+
+        const userInfo = await Employee.findOne({ userId: residentId })
+          .populate({ path: 'userId', select: 'phoneNumber email' });
+
+        if (userInfo) {
+          const residentDetails = {
+            firstName: userInfo.firstName || '',
+            lastName: userInfo.lastName || '',
+            middleName: userInfo.middleName || '',
+            phoneNumber: userInfo.cellPhoneNumber || '', 
+            email: userInfo.userId.email || '',
+            car: userInfo.car || {}
+          };
+
+          detailedResidents.push(residentDetails);
+        }
+      }
+      houseCopy.residents = detailedResidents;
+    }
+
+    res.status(200).json(houseCopy);
   } catch (error) {
     res.status(500).json({ message: 'Failed to get house details', error });
   }
