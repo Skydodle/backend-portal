@@ -21,7 +21,7 @@ emHouseRouter.post(
   validateJWT,
   addCommentToFacilityReport,
 );
-emHouseRouter.put('/comment/:id', validateJWT, updateComment);
+emHouseRouter.put('/comment/:commentId', validateJWT, updateComment);
 emHouseRouter.get(
   '/report/:reportId/comments',
   validateJWT,

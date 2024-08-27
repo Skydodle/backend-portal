@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const Employee = require('../models/Employee');
 const FacilityReport = require('../models/FacilityReport');
 
 // Controller method to add a new comment to a facility report
@@ -24,12 +25,23 @@ const addCommentToFacilityReport = async (req, res) => {
 
 // Controller method to update an existing comment
 const updateComment = async (req, res) => {
-  const { id } = req.params;
+  const { commentId } = req.params; // Changed from id to commentId
   const { description } = req.body;
+  const userId = req.user.id;
 
   try {
+    // Find the comment first
+    const comment = await Comment.findById(commentId);
+
+    // Check if the user is the creator of the comment
+    if (comment.createdBy.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: 'Unauthorized to update this comment' });
+    }
+
     const updatedComment = await Comment.findByIdAndUpdate(
-      id,
+      commentId, // Changed from id to commentId
       { description },
       { new: true },
     );
@@ -42,6 +54,7 @@ const updateComment = async (req, res) => {
       .status(200)
       .json({ message: 'Comment updated successfully', updatedComment });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to update comment', error });
   }
 };
@@ -57,8 +70,23 @@ const getCommentsForFacilityReport = async (req, res) => {
       return res.status(404).json({ message: 'Facility report not found' });
     }
 
-    res.status(200).json(report.comments);
+    const commentsWithEmployeeDetails = await Promise.all(
+      report.comments.map(async (comment) => {
+        const employee = await Employee.findOne({ userId: comment.createdBy });
+
+        return {
+          ...comment.toObject(),
+          createdBy: {
+            firstName: employee?.firstName || 'Unknown',
+            lastName: employee?.lastName || '',
+          },
+        };
+      }),
+    );
+
+    res.status(200).json(commentsWithEmployeeDetails);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to get comments', error });
   }
 };
