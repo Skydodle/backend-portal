@@ -19,12 +19,37 @@ const createHouse = async (req, res) => {
   }
 };
 
+const getEMHouseDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const house = await House.findById(id)
+      .populate({
+        path: 'residents',
+        select: 'username assignedHouse',
+        populate: {
+          path: 'userId',
+          model: 'Employee',
+          select: 'firstName lastName cellPhoneNumber',
+        },
+      })
+      .populate('facilityReports');
+
+    if (!house) {
+      return res.status(404).json({ message: 'House not found' });
+    }
+
+    res.status(200).json(house);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get house details', error });
+  }
+};
+
 // Controller method to get details of a specific house
 const getHouseDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
-
     const house = await House.findById(id)
       .populate({
         path: 'residents',
@@ -43,20 +68,20 @@ const getHouseDetails = async (req, res) => {
     const houseCopy = { ...house.toObject() };
 
     if (house.residents.length !== 0) {
-        const detailedResidents = [];
+      const detailedResidents = [];
       for (let residentId of house.residents) {
-
-        const userInfo = await Employee.findOne({ userId: residentId })
-          .populate({ path: 'userId', select: 'phoneNumber email' });
+        const userInfo = await Employee.findOne({
+          userId: residentId,
+        }).populate({ path: 'userId', select: 'phoneNumber email' });
 
         if (userInfo) {
           const residentDetails = {
             firstName: userInfo.firstName || '',
             lastName: userInfo.lastName || '',
             middleName: userInfo.middleName || '',
-            phoneNumber: userInfo.cellPhoneNumber || '', 
+            phoneNumber: userInfo.cellPhoneNumber || '',
             email: userInfo.userId.email || '',
-            car: userInfo.car || {}
+            car: userInfo.car || {},
           };
 
           detailedResidents.push(residentDetails);
@@ -67,6 +92,7 @@ const getHouseDetails = async (req, res) => {
 
     res.status(200).json(houseCopy);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to get house details', error });
   }
 };
@@ -103,4 +129,5 @@ module.exports = {
   getHouseDetails,
   deleteHouse,
   getAllHouses,
+  getEMHouseDetails,
 };

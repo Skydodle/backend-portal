@@ -3,7 +3,10 @@ const {
   createFacilityReport,
   getFacilityReportsForHouse,
 } = require('../controllers/facilityReportController');
-const { getHouseDetails } = require('../controllers/houseController');
+const {
+  getHouseDetails,
+  getEMHouseDetails,
+} = require('../controllers/houseController');
 const {
   addCommentToFacilityReport,
   updateComment,
@@ -13,7 +16,7 @@ const { validateJWT } = require('../middlewares/AuthMiddleware');
 
 const emHouseRouter = Router();
 
-emHouseRouter.get('/:id', validateJWT, getHouseDetails);
+emHouseRouter.get('/:id', validateJWT, getEMHouseDetails);
 emHouseRouter.post('/:houseId/report', validateJWT, createFacilityReport);
 emHouseRouter.get('/:houseId/reports', validateJWT, getFacilityReportsForHouse);
 emHouseRouter.post(
